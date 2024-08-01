@@ -4,10 +4,22 @@ from datetime import datetime, timedelta
 import sqlite3
 from datetime import datetime
 
+def get_api_key_from_1password(op_reference):
+    import subprocess
+
+    try:
+        # Call the `op` command to read the API key from 1Password
+        result = subprocess.run(['op', 'read', op_reference], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+        api_key = result.stdout.strip()
+        return api_key
+    except subprocess.CalledProcessError as e:
+        print(f"Error reading API key from 1Password: {e.stderr}")
+        return None
+    
 # Replace with your actual API key and Application Key
-API_KEY = 'ba96647de7e4446b80a79351838ca2dce29ab6bd8b91413d9df101b54d398899'
-APP_KEY = 'c8a3bd5a81914fb3add65af391d59445042b59be7e5848d5a46f90e4f9eba654'
-STATION_ID = '48:55:19:C2:81:F9'
+API_KEY = get_api_key_from_1password("op://iot/ambientweather.net/python_api_key")
+APP_KEY = get_api_key_from_1password("op://iot/ambientweather.net/python_app_key")
+STATION_ID = get_api_key_from_1password("op://iot/ambientweather.net/station_id")
 API_URL = f'https://api.ambientweather.net/v1/devices/{STATION_ID}?apiKey={API_KEY}&applicationKey={APP_KEY}'
 
 # Connect to the SQLite database
